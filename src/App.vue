@@ -66,7 +66,7 @@
 
   <div class="row">
     <template v-for="(pokemon,index) in dataList" :key="index">
-      <div @click="pokemon.owned = !pokemon.owned" class="column" v-if="(lowIndex <=index && index <= maxIndex && showingCaught ) || (!pokemon.owned && !showingCaught && lowIndex <=index && index <= maxIndex)"  v-bind:class = "pokemon.owned?'caught':''">
+      <div @click="pokemon.owned = !pokemon.owned" class="column" v-if="(lowIndex <=index && index <= maxIndex && showingCaught ) || (!pokemon.owned && !showingCaught && lowIndex <=index && index <= maxIndex)"  v-bind:class = "pokemon.owned?'caught':''"> 
         
         
         <div class="card" >
