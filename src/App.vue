@@ -61,7 +61,7 @@
 
     
   </div>
-  {{lowIndex}}-{{maxIndex}}
+  {{lowIndex}}-{{maxIndex}} 
   <br><br><br>
 
   <div class="row">
