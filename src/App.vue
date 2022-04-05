@@ -140,37 +140,37 @@ export default {
           break;
 
         case 'Johto':
-          this.lowIndex = 152
+          this.lowIndex = 151
           this.maxIndex = 251
           break;
 
         case 'Hoenn':
-          this.lowIndex = 252
+          this.lowIndex = 250
           this.maxIndex = 386
           break;
 
         case 'Shinnoh':
-          this.lowIndex = 387
+          this.lowIndex = 385
           this.maxIndex = 493
           break;
 
         case 'Ish':
-          this.lowIndex = 494
+          this.lowIndex = 493
           this.maxIndex = 649
           break;
 
           case 'Kalos':
-          this.lowIndex = 650
+          this.lowIndex = 649
           this.maxIndex = 721
           break;
 
         case 'Alola':
-          this.lowIndex = 722
+          this.lowIndex = 721
           this.maxIndex = 809
           break;
 
         case 'Galar':
-          this.lowIndex = 810
+          this.lowIndex = 808
           this.maxIndex = 898
           break;
 
