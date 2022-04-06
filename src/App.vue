@@ -10,12 +10,12 @@
   </head>
   <div> <!-- table -->
   
-    <table style="margin-left:auto; margin-right:auto;">
+    <table style="margin-left:auto; margin-right:auto; margin-top:50px">
        <tr>
-        <th @click="chosenRegion='Kanto'">カントー</th>&nbsp;
-        <th @click="chosenRegion='Johto'">ジョウト</th>&nbsp;
-        <th @click="chosenRegion='Hoenn'"> ホウエン</th>&nbsp;
-        <th @click="chosenRegion='Shinnoh'">シンオウ</th>
+        <th @click="chosenRegion='Kanto'"  v-bind:class = "regionClass('Kanto')? 'end':''">カントー</th>&nbsp;
+        <th @click="chosenRegion='Johto'" v-bind:class = "regionClass('Johto')? 'end':''">ジョウト</th>&nbsp;
+        <th @click="chosenRegion='Hoenn'" v-bind:class = "regionClass('Hoenn')? 'end':''"> ホウエン</th>&nbsp;
+        <th @click="chosenRegion='Shinnoh'" v-bind:class = "regionClass('Shinnoh')? 'end':''">シンオウ</th>
       </tr>
       <tr>
         <td>151/{{KantoRemaining}}</td>&nbsp;
@@ -27,11 +27,11 @@
     <br>
     <table style="margin-left:auto; margin-right:auto;">
        <tr>
-        <th @click="chosenRegion='Ish'">イッシュ</th>&nbsp;
-        <th @click="chosenRegion='Kalos'">カロス</th>&nbsp;
-        <th @click="chosenRegion='Alola'">アローラ</th>&nbsp;
-        <th @click="chosenRegion='Galar'">ガラル</th>&nbsp;
-        <th @click="chosenRegion=''">全て</th>
+        <th @click="chosenRegion='Ish'" v-bind:class = "regionClass('Ish')? 'end':''">イッシュ</th>&nbsp;
+        <th @click="chosenRegion='Kalos'" v-bind:class = "regionClass('Kalos')? 'end':''">カロス</th>&nbsp;
+        <th @click="chosenRegion='Alola'" v-bind:class = "regionClass('Alola')? 'end':''">アローラ</th>&nbsp;
+        <th @click="chosenRegion='Galar'" v-bind:class = "regionClass('Galar')? 'end':''">ガラル</th>&nbsp;
+        <th @click="chosenRegion='All'" v-bind:class = "regionClass('All')? 'end':''">全て</th>
       </tr>
       <tr>
         <td>156/{{IshRemaining}}</td>&nbsp;
@@ -71,7 +71,7 @@
         
         <div class="card" >
           <img v-bind:src="linkSrc + index +'.png'">
-          <small>No.{{index}}</small>
+          <small v-bind:class = "index % 18?'':'end'">No.{{index}}</small>
           <br>
           <span style="margin-bottom: 50px">{{nameList[index]}}</span>
         </div>
@@ -206,6 +206,14 @@ export default {
       console.log(json)
       
     },
+
+    regionClass(name){
+      if(name == this.chosenRegion){
+        return true
+      }else{
+        return false
+      }
+    }
   },
   computed:{
     KantoRemaining() {
@@ -392,6 +400,10 @@ img{
 
 .caught{
   opacity: 0.35;
+}
+
+.end{
+  color:red;
 }
 
 /* Responsive columns - one column layout (vertical) on small screens */
