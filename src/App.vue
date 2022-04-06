@@ -79,12 +79,10 @@
       
     </template>
   </div>
-  <div>
+  <div style="margin-bottom: 50px">
     Top&nbsp;<a class="fa fa-arrow-up" @click="topFunction()" style="margin-top:25px"></a>
   </div>
 </template>
-
-
 
 <script>
 // import HelloWorld from './components/HelloWorld.vue'
@@ -375,18 +373,19 @@ body {
 /* Style the counter cards */
 .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* this adds the "card" effect */
-  padding: 10px;
+  padding: 0px;
   text-align: center;
   background-color: #f1f1f1;
   margin-bottom: 15px;
-  height: 150px;
+  height: 100px;
   font-size: 80%;
 }
 
 img{
-   display:block;
-  width:95%;
+  display:block;
+  width:50%;
   height: auto;
+  margin-top: 10px;
   margin-left:auto;
   margin-right:auto;
 }
