@@ -73,13 +73,13 @@
           <img v-bind:src="linkSrc + index +'.png'">
           <small>No.{{index}}</small>
           <br>
-          <span>{{nameList[index]}}</span>
+          <span style="margin-bottom: 50px">{{nameList[index]}}</span>
         </div>
       </div>
       
     </template>
   </div>
-  <div style="margin-bottom: 50px">
+  <div style="margin-bottom: 0px">
     Top&nbsp;<a class="fa fa-arrow-up" @click="topFunction()" style="margin-top:25px"></a>
   </div>
 </template>
@@ -377,13 +377,13 @@ body {
   text-align: center;
   background-color: #f1f1f1;
   margin-bottom: 15px;
-  height: 100px;
+  height: auto;
   font-size: 80%;
 }
 
 img{
   display:block;
-  width:50%;
+  width:70%;
   height: auto;
   margin-top: 10px;
   margin-left:auto;
