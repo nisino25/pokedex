@@ -48,13 +48,13 @@
   
   <hr>
   
-  <div style="float:right; margin-right:5px; ">
+  <div style="float:right; margin-right:5px; margin-right: 20px">
     <div @click='showingCaught = true'>
       <label for="" style="margin-right: 6px">ON</label>
       <input type="radio" v-model="showingCaught" v-bind:value="true">
     </div>
 
-    <div @click='showingCaught = false'>
+    <div @click='showingCaught = false' style="">
       <label for="">OFF</label>
       <input type="radio" v-model="showingCaught" v-bind:value="false">
     </div>
@@ -337,8 +337,14 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+  margin-right: auto;
+  margin-left: auto;
   color: #2c3e50;
   margin-top: 60px;
+  width: 375px;
+  margin:0;
+padding:0;
+overflow-x:hidden;
 }
 
 * {
