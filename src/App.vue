@@ -459,17 +459,24 @@ export default {
     },
 
     async exportData(){
-      let docRef = db.collection('database').doc('account')
-      let val = await docRef.get()
+      let text = `${this.currentUser}としてデータをアップロードしますか？`;
+      if (confirm(text) == true) {
+        let docRef = db.collection('database').doc('account')
+        let val = await docRef.get()
+        
+        let favoriteData = val.exists ? val.data() : {}
+
+        favoriteData[this.currentUser] = JSON.stringify(this.dataList)
+
+        // localStorage.pokemonDataList = JSON.stringify(this.dataList); 
+        // await docRef.set(JSON.stringify(this.dataList) )
+        await docRef.set(favoriteData)
+        console.log('done')
+        
+      } else {
+        text = "You canceled!";
+      }
       
-      let favoriteData = val.exists ? val.data() : {}
-
-      favoriteData[this.currentUser] = JSON.stringify(this.dataList)
-
-      // localStorage.pokemonDataList = JSON.stringify(this.dataList); 
-      // await docRef.set(JSON.stringify(this.dataList) )
-      await docRef.set(favoriteData)
-      console.log('done')
       
     },
 
