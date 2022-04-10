@@ -22,6 +22,8 @@
               <th @click="mode='rare'; chosenRegion='All'"  v-bind:class = "modeClass('rare')? 'mode':''">レアカ</th>&nbsp;
               
               <th @click="mode='search'; chosenRegion='All'"  v-bind:class = "modeClass('search')? 'mode':''">検索</th>&nbsp;
+
+              <th @click="exportData()"  v-bind:class = "modeClass('search')? 'mode':''">アップロード</th>&nbsp;
             </tr>
           </table>
 
@@ -286,7 +288,9 @@
 <script>
 // import HelloWorld from './components/HelloWorld.vue'
 import { nameList } from  './const/nameList'
-  import { basic } from  './const/basic.js'
+import { basic } from  './const/basic.js'
+// import { db } from './firebase.js'
+import db from "./firebase.js"
 
 export default {
   name: 'App',
@@ -305,6 +309,7 @@ export default {
       showingCaught: true,
 
       mode: 'index',
+      currentUser: 'nisino25',
 
 
     }
@@ -451,7 +456,42 @@ export default {
           this.dataList[num].shiny = true
         }
       }
-    }
+    },
+
+    async exportData(){
+      let docRef = db.collection('database').doc('account')
+      let val = await docRef.get()
+      
+      let favoriteData = val.exists ? val.data() : {}
+
+      favoriteData[this.currentUser] = JSON.stringify(this.dataList)
+
+      // localStorage.pokemonDataList = JSON.stringify(this.dataList); 
+      // await docRef.set(JSON.stringify(this.dataList) )
+      await docRef.set(favoriteData)
+      console.log('done')
+      
+    },
+
+    // async incrementVisitNum(){
+    //   this.firstMove = true;
+    //   let docRef = db.collection('database').doc('mainData')
+    //   let val = await docRef.get()
+      
+    //   let favoriteData = val.exists ? val.data() : {}
+    //   // console.log(doc.data())
+    //   if(!(favoriteData[this.currentUser.uid])){
+    //     favoriteData[this.currentUser.uid] = [1,0,0,0];
+    //   }else{
+    //     favoriteData[this.currentUser.uid][0]++
+    //   }
+      
+    //   await docRef.set(favoriteData)
+    //   this.getMasterData()
+      
+    // },
+
+    
   },
   computed:{
     KantoRemaining() {
