@@ -11,9 +11,11 @@
   </head>
 
   <body>
+    <auth v-if="is_loggedin"></auth>
     
-    <div class="wrapper"> <!-- wrapper  -->
-      
+
+    <div class="wrapper" v-if="!is_logined"> <!-- wrapper  -->
+
       <div><!-- menu section  -->
         <div> <!-- menu button  -->
           <table style="margin-left:auto; margin-right:auto; margin-top:50px">
@@ -23,7 +25,7 @@
               
               <th @click="mode='search'; chosenRegion='All'"  v-bind:class = "modeClass('search')? 'mode':''">検索</th>&nbsp;
 
-              <th @click="exportData()"  v-bind:class = "modeClass('search')? 'mode':''">アップロード</th>&nbsp;
+              <th @click="exportData()"  v-bind:class = "modeClass('a')? 'mode':''">アップロード</th>&nbsp;
             </tr>
           </table>
 
@@ -191,8 +193,17 @@
         </div>
 
         <div v-if="mode=='search'"> <!-- mode -search- -->
-
-          <div> <!-- table --> 
+          
+          <table style="margin-left:auto; margin-right:auto; margin-top:30px">
+            <tr>
+              <th @click="searchMode='pokemon'" v-bind:class = "searchClass('pokemon')? 'searchTab':''">ポケモン</th>&nbsp;
+              <th @click="searchMode='series'; chosenRegion='all'"  v-bind:class = "searchClass('series')? 'searchTab':''">シリーズ</th>&nbsp;
+              
+              </tr>
+            </table>
+          <hr>
+          
+          <div v-if="searchMode=='pokemon'"> <!-- table --> 
             <table style="margin-left:auto; margin-right:auto; margin-top:30px">
             <tr>
               <th @click="chosenRegion='Kanto'"  v-bind:class = "regionClass('Kanto')? 'end':''">カントー</th>&nbsp;
@@ -229,7 +240,70 @@
 
             <hr>
           </div>
-          <div> <!-- content --> 
+
+
+          <div v-if="searchMode=='series'"><!--  series -->
+            
+            <div>
+              <select v-model="selectedSeries">
+                <option disabled value="">選択して下さい</option>
+                <option v-for="item in seriesList" v-bind:value="item.id" v-bind:key="item">
+                    {{ item.name }}
+                </option>
+              </select>
+              <br>
+
+              <span @click="searchSeries">Search</span>
+
+            </div>
+
+            <hr>
+
+
+            <div v-if="selectedSeries">
+              {{this.seriesDetail.releaseDate}}
+              <br>
+              {{this.seriesDetail.printedTotal}}
+
+            <br><br><br>
+
+            </div>
+
+            
+
+    
+
+            <div class="row"> <!-- card -->
+              <template v-for="(pokemon,index) in tempList" :key="index">
+                <div class="column"  > 
+                  
+                  
+                  <div class="card" >
+                    <img v-bind:src="tempList[index].images.large">
+                    <small v-bind:class = "index % 18?'':'end'">No.{{index+1 }}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
+                    <br>
+                    <!-- <span>{{tempList[index].id}}</span> -->
+                    <span v-if="tempList[index].supertype=='Pokémon'" style="margin-bottom: 50px">{{basic[tempList[index].nationalPokedexNumbers[0]].name}}</span>
+                    <span v-else style="margin-bottom: 50px">{{tempList[index].name}}</span>
+                    <br>
+                    <span v-if="tempList[index].cardmarket">
+                      {{ Math.floor(tempList[index].cardmarket.prices.averageSellPrice * 125)}}¥
+
+                    </span>
+                  </div>
+                </div>
+                
+              </template>
+            </div>
+            <div style="margin-bottom: 0px">
+              Top&nbsp;<a class="fa fa-arrow-up" @click="topFunction()" style="margin-top:25px"></a>
+            </div>
+
+          </div>
+
+
+
+          <div v-if="searchMode=='pokemon'"> <!-- pokemon seach --> 
             <div style="float:right; margin-right:5px; margin-right: 20px">
               <div @click='showingCaught = true'>
                 <label for="" style="margin-right: 6px">ON</label>
@@ -244,24 +318,54 @@
               
             </div>
             {{lowIndex}}-{{maxIndex}} 
+            <br>
+            <span @click="showingOnePokemon = false">Go back</span>
             <br><br><br>
 
             <div class="row">
             <!-- card -->
-              <template v-for="(pokemon,index) in dataList" :key="index">
-                <div @click="getPic(basic[index].name)" class="column" v-if="(lowIndex <=index && index <= maxIndex && showingCaught ) || (!pokemon.owned && !showingCaught && lowIndex <=index && index <= maxIndex)" > 
-                  
-                  
-                  <div class="card" >
-                    <img v-bind:src="linkSrc + index +'.png'">
-                    <small v-bind:class = "index % 18?'':'end'">No.{{index}}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
-                    <br>
-                    <span style="margin-bottom: 50px">{{basic[index].name}}</span>
-                  </div>
-                </div>
+              <div v-if="showingOnePokemon">
                 
-              </template>
+                <template v-for="(pokemon,index) in tempList" :key="index">
+                  <div  @click="getPic(basic[index].name)" class="column"  > 
+                  
+                  
+                    <div class="card" >
+                      <img v-bind:src="tempList[index].images.large">
+                      <small v-bind:class = "index % 18?'':'end'">No.{{index+1 }}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
+                      <br>
+                      <!-- <span>{{tempList[index].id}}</span> -->
+                      <span v-if="tempList[index].supertype=='Pokémon'" style="margin-bottom: 50px">{{basic[tempList[index].nationalPokedexNumbers[0]].name}}</span>
+                      <span v-else style="margin-bottom: 50px">{{tempList[index].name}}</span>
+                      <br>
+                      <span v-if="tempList[index].cardmarket">
+                        {{ Math.floor(tempList[index].cardmarket.prices.averageSellPrice * 125)}}¥
+
+                      </span>
+                    </div>
+                  </div>
+                  
+                </template>
+              </div>
+              <div v-else> 
+                <div v-for="(pokemon,index) in dataList" :key="index">
+                  <div @click="getPic(index)" class="column" v-if="(lowIndex <=index && index <= maxIndex && showingCaught ) || (!pokemon.owned && !showingCaught && lowIndex <=index && index <= maxIndex)"  > 
+                    
+                    
+                    <div class="card" >
+                      <img v-bind:src="linkSrc + index +'.png'">
+                      <small v-bind:class = "index % 18?'':'end'">No.{{index}}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
+                      <br>
+                      <span style="margin-bottom: 50px">{{basic[index].name}}</span>
+                    </div>
+                  </div>
+                
+                </div>
+
+             </div>
+              
             </div>
+
             <div style="margin-bottom: 0px">
               Top&nbsp;<a class="fa fa-arrow-up" @click="topFunction()" style="margin-top:25px"></a>
             </div>
@@ -288,19 +392,25 @@
 <script>
 // import HelloWorld from './components/HelloWorld.vue'
 import { nameList } from  './const/nameList'
+import { seriesList } from  './const/seriesList'
 import { basic } from  './const/basic.js'
-// import { db } from './firebase.js'
+import auth from  './components/auth.vue';
 import db from "./firebase.js"
 
+// import firebase from 'firebase'
+// require('firebase/aut
 export default {
   name: 'App',
-
+  components: {
+    auth 
+  },
   data(){
     return{
       linkSrc: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/",
       sup: 'yo',
       allName: '',
       nameList,
+      seriesList,
       basic,
       dataList: undefined,
       chosenRegion: 'All',
@@ -308,29 +418,17 @@ export default {
       maxIndex: 151,
       showingCaught: true,
 
-      mode: 'index',
-      currentUser: 'nisino25',
+      mode: 'search',
+      searchMode: 'series',
+      // currentUser: 'nisino25',
+      is_logined: false,
+      setUrl: 'https://api.pokemontcg.io/v2/cards?q=set.id:',
+      selectedSeries: undefined,
+      tempList: undefined,
+      seriesDetail: undefined,
+      showingOnePokemon: false,
 
 
-    }
-  },
-  mounted(){
-    if(localStorage.pokemonDataList){
-      console.log('local data found it')
-      this.dataList = JSON.parse(localStorage.pokemonDataList);
-      this.dataList[0].owned= true
-      this.dataList[0].shiny= false
-      if(this.dataList[0].shiny){
-        console.log('jheus')
-        this.addShiny()
-      }
-
-      // this.showingDataList = this.createShowingCal()
-    }else{
-      console.log('welcome and now creating') 
-
-      this.createData()
-      localStorage.pokemonDataList = JSON.stringify(this.dataList); 
     }
   },
   watch:{
@@ -426,6 +524,14 @@ export default {
       }
     },
 
+    searchClass(name){
+      if(name == this.searchMode){
+        return true
+      }else{
+        return false
+      }
+    },
+
     modeClass(name){
       if(name == this.mode){
         return true
@@ -434,8 +540,15 @@ export default {
       }
     },
 
-    getPic(name){
-      window.open('https://yuyu-tei.jp/game_poc/sell/sell_price.php?name='+ name, '_blank').focus();
+    async getPic(num){
+      this.showingOnePokemon = true
+      const URL =  'https://api.pokemontcg.io/v2/cards?q=nationalPokedexNumbers:' + num
+      const res = await fetch(URL)
+      const json = await res.json()
+      this.tempList = json.data
+      console.log(this.tempList)
+      this.getMoreData() 
+      return
     },
 
     addShiny(){
@@ -480,6 +593,30 @@ export default {
       
     },
 
+    async searchSeries(){
+      const URL = this.setUrl +this.selectedSeries
+      const res = await fetch(URL)
+      const json = await res.json()
+      this.tempList = json.data
+      console.log(this.tempList)
+      this.getMoreData() 
+      return
+    },
+
+    async getMoreData() {
+      const URL = 'https://api.pokemontcg.io/v2/sets/' +this.selectedSeries
+      const res = await fetch(URL)
+      const json = await res.json()
+      this.seriesDetail = json.data
+      console.log(json.data)
+
+      
+      return
+    },
+
+
+
+
     // async incrementVisitNum(){
     //   this.firstMove = true;
     //   let docRef = db.collection('database').doc('mainData')
@@ -501,6 +638,9 @@ export default {
     
   },
   computed:{
+    
+    
+
     KantoRemaining() {
       let num =0
       let count = 1
@@ -738,7 +878,24 @@ export default {
     },
 
     
-  }
+  },
+   mounted(){
+    if(localStorage.pokemonDataList){
+      console.log('local data found it')
+      this.dataList = JSON.parse(localStorage.pokemonDataList);
+      this.dataList[0].owned= true
+      this.dataList[0].shiny= false
+      if(this.dataList[0].shiny){
+        console.log('jheus')
+        this.addShiny()
+      }
+      // this.showingDataList = this.createShowingCal()
+    }else{
+      console.log('welcome and now creating') 
+      this.createData()
+      localStorage.pokemonDataList = JSON.stringify(this.dataList); 
+    }
+  },
 }
 </script>
 
@@ -813,6 +970,9 @@ img{
 
 .end{
   color:red;
+}
+.searchTab{
+  color:green;
 }
 
 .mode{
