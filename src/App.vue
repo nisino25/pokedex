@@ -244,26 +244,35 @@
 
           <div v-if="searchMode=='series'"><!--  series -->
             
-            <div>
-              <select v-model="selectedSeries">
+            <div >
+              <!-- <select v-model="selectedSeries">
                 <option disabled value="">選択して下さい</option>
                 <option v-for="item in seriesList" v-bind:value="item.id" v-bind:key="item">
                     {{ item.name }}
                 </option>
-              </select>
+              </select> -->
+              <template v-if="!hasChosenSeries">
+                <div v-for="(series,index) in seriesList" :key="index">
+                  <span @click="searchSeries(series.id)">{{series.name}}</span>
+                </div>
+              </template>
               <br>
 
-              <span @click="searchSeries">Search</span>
 
             </div>
 
             <hr>
 
 
-            <div v-if="selectedSeries">
+            <div v-if="hasChosenSeries">
+              {{this.seriesDetail.name}}
+              <br>
               {{this.seriesDetail.releaseDate}}
               <br>
               {{this.seriesDetail.printedTotal}}
+              <br>
+
+              <span @click="hasChosenSeries=false">Go back</span>
 
             <br><br><br>
 
@@ -427,6 +436,7 @@ export default {
       tempList: undefined,
       seriesDetail: undefined,
       showingOnePokemon: false,
+      hasChosenSeries: false,
 
 
     }
@@ -593,12 +603,14 @@ export default {
       
     },
 
-    async searchSeries(){
-      const URL = this.setUrl +this.selectedSeries
+    async searchSeries(title){
+      const URL = this.setUrl +title
       const res = await fetch(URL)
       const json = await res.json()
       this.tempList = json.data
       console.log(this.tempList)
+      this.hasChosenSeries =true
+      this.selectedSeries = title
       this.getMoreData() 
       return
     },
@@ -957,7 +969,7 @@ body {
 
 img{
   display:block;
-  width:70%;
+  width:95%;
   height: auto;
   margin-top: 10px;
   margin-left:auto;
