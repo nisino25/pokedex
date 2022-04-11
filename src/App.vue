@@ -345,11 +345,12 @@
                       <br>
                       <!-- <span>{{tempList[index].id}}</span> -->
                       <span v-if="tempList[index].supertype=='Pokémon'" style="margin-bottom: 50px">{{basic[tempList[index].nationalPokedexNumbers[0]].name}}</span>
-                      <span v-else style="margin-bottom: 50px">{{tempList[index].name}}</span>
+                      <!-- <span  style="margin-bottom: 50px">{{tempList[index].name}}</span> -->
                       <br>
                       <span v-if="tempList[index].cardmarket">
-                        {{ Math.floor(tempList[index].cardmarket.prices.averageSellPrice * 125)}}¥
-
+                        <span v-if="tempList[index].cardmarket.prices">
+                          {{ Math.floor(tempList[index].cardmarket.prices.averageSellPrice * 125)}}¥
+                        </span>
                       </span>
                     </div>
                   </div>
@@ -366,6 +367,7 @@
                       <small v-bind:class = "index % 18?'':'end'">No.{{index}}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
                       <br>
                       <span style="margin-bottom: 50px">{{basic[index].name}}</span>
+                      <span style="margin-bottom: 50px">{{index}}</span>
                     </div>
                   </div>
                 
@@ -449,6 +451,7 @@ export default {
       }
     },
     chosenRegion: function(){
+      this.showingOnePokemon = false
 
       switch(this.chosenRegion) {
         case 'Kanto':
@@ -519,7 +522,7 @@ export default {
     // },
 
     async getSpecificPokemon(id){
-      const URL = 'https://pokeapi.co/api/v2/pokemon-species/' +id.toString()  
+      const URL = 'https://pokeapi.co/api/v2/pokemon-species/' +id.toString() +'&orderBy=-set.releaseDate'
       const res = await fetch(URL)
       const json = await res.json()
       console.log(json)
@@ -551,6 +554,9 @@ export default {
     },
 
     async getPic(num){
+      if(num == 151){
+        console.log('ミュウ')
+      }
       this.showingOnePokemon = true
       const URL =  'https://api.pokemontcg.io/v2/cards?q=nationalPokedexNumbers:' + num
       const res = await fetch(URL)
