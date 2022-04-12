@@ -290,7 +290,7 @@
                 <div class="column"  > 
                   
                   
-                  <div class="card" >
+                  <div class="card" @click="displayPic(tempList[index].images.large)"  >
                     <img v-bind:src="tempList[index].images.large">
                     <small v-bind:class = "index % 18?'':'end'">No.{{index+1 }}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
                     <br>
@@ -416,10 +416,10 @@
       
     </div>
 
-    <div v-else>
+    <div v-else @click="BigPicture= false"> <!-- pivs  -->
       <img style="margin-top:50px" :src="picsrc" alt="">
       <br>
-      <button @click="BigPicture= false">Go back</button>
+      <button >Go back</button>
     </div>
 
   </body>
