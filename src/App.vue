@@ -14,7 +14,7 @@
     <auth v-if="is_loggedin"></auth>
     
 
-    <div class="wrapper" v-if="!is_logined"> <!-- wrapper  -->
+    <div class="wrapper" v-if="!BigPicture"> <!-- wrapper  -->
 
       <div><!-- menu section  -->
         <div> <!-- menu button  -->
@@ -252,8 +252,11 @@
                 </option>
               </select> -->
               <template v-if="!hasChosenSeries">
+                <!-- <span @click="test()">test</span> -->
+                <!-- {{list}} -->
                 <div v-for="(series,index) in seriesList" :key="index">
-                  <span @click="searchSeries(series.id)">{{series.name}}</span>
+                  <span @click="searchSeries(series.id)" class="series"><small style="color:red">{{series.series}}</small>:{{series.name}}({{series.releaseDate.substring(0, series.releaseDate.indexOf('/'))}})</span>
+                  <br>
                 </div>
               </template>
               <br>
@@ -329,17 +332,33 @@
             {{lowIndex}}-{{maxIndex}} 
             <br>
             <span @click="showingOnePokemon = false">Go back</span>
-            <br><br><br>
+            
+            <br>
+            <div v-if="showingOnePokemon">
+              <span v-if="showingOnePokemon">{{tempCount}} Cards</span><br>
+             <span>
+                Lowest price {{Math.floor(tempLowest* 125)}}¥ from No.{{tempLowestIndex +1}}
+              </span><br>
+              <span>
+                Highesgt price {{Math.floor(tempHighest* 125)}}¥ from No.{{tempHighestIndex +1}}
+              </span><br>
+
+            </div>
+            
+
+            <br><br>
 
             <div class="row">
             <!-- card -->
               <div v-if="showingOnePokemon">
                 
+                
                 <template v-for="(pokemon,index) in tempList" :key="index">
-                  <div  @click="getPic(basic[index].name)" class="column"  > 
+                  <div  class="column"  > 
+                    
                   
                   
-                    <div class="card" >
+                    <div class="card" @click="displayPic(tempList[index].images.large)"  v-bind:class="{ BigPicture: 'bigPic' }" >
                       <img v-bind:src="tempList[index].images.large">
                       <small v-bind:class = "index % 18?'':'end'">No.{{index+1 }}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
                       <br>
@@ -349,7 +368,7 @@
                       <br>
                       <span v-if="tempList[index].cardmarket">
                         <span v-if="tempList[index].cardmarket.prices">
-                          {{ Math.floor(tempList[index].cardmarket.prices.averageSellPrice * 125)}}¥
+                          {{ Math.floor(tempList[index].cardmarket.prices.trendPrice * 125)}}¥
                         </span>
                       </span>
                     </div>
@@ -367,7 +386,9 @@
                       <small v-bind:class = "index % 18?'':'end'">No.{{index}}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
                       <br>
                       <span style="margin-bottom: 50px">{{basic[index].name}}</span>
-                      <span style="margin-bottom: 50px">{{index}}</span>
+                      <br>
+                      <span style="margin-bottom: 50px">{{totalPrintedList[index]}} Cards</span><br>
+                     
                     </div>
                   </div>
                 
@@ -394,6 +415,13 @@
 
       
     </div>
+
+    <div v-else>
+      <img style="margin-top:50px" :src="picsrc" alt="">
+      <br>
+      <button @click="BigPicture= false">Go back</button>
+    </div>
+
   </body>
 
   
@@ -404,6 +432,7 @@
 // import HelloWorld from './components/HelloWorld.vue'
 import { nameList } from  './const/nameList'
 import { seriesList } from  './const/seriesList'
+import { totalPrintedList } from  './const/totalPrintedList'
 import { basic } from  './const/basic.js'
 import auth from  './components/auth.vue';
 import db from "./firebase.js"
@@ -422,12 +451,14 @@ export default {
       allName: '',
       nameList,
       seriesList,
+      totalPrintedList,
       basic,
       dataList: undefined,
       chosenRegion: 'All',
       lowIndex: 1,
       maxIndex: 151,
       showingCaught: true,
+      list: undefined,
 
       mode: 'search',
       searchMode: 'series',
@@ -439,6 +470,16 @@ export default {
       seriesDetail: undefined,
       showingOnePokemon: false,
       hasChosenSeries: false,
+
+      tempData: undefined,
+      tempCount: undefined,
+      tempLowest: undefined,
+      tempLowestIndex: undefined,
+      tempHighest: undefined,
+      tempHighestIndex: undefined,
+
+      BigPicture: false,
+      picsrc: undefined,
 
 
     }
@@ -526,6 +567,12 @@ export default {
       const res = await fetch(URL)
       const json = await res.json()
       console.log(json)
+      this.tempData = json
+      this.tempCount = 0
+      for(let i in json){
+        this.tempCount++
+        console.log(i)
+      }
       
     },
 
@@ -558,12 +605,40 @@ export default {
         console.log('ミュウ')
       }
       this.showingOnePokemon = true
-      const URL =  'https://api.pokemontcg.io/v2/cards?q=nationalPokedexNumbers:' + num
+      const URL =  'https://api.pokemontcg.io/v2/cards?q=nationalPokedexNumbers:' + num +'&orderBy=set.releaseDate'
       const res = await fetch(URL)
       const json = await res.json()
       this.tempList = json.data
       console.log(this.tempList)
       this.getMoreData() 
+      this.tempCount = 0
+      let list = []
+      let indexList = []
+
+      for(let i in this.tempList){
+        if(this.tempList[i].cardmarket){
+          if(this.tempList[i].cardmarket.prices){
+            if(this.tempList[i].cardmarket.prices.trendPrice){
+              // console.log(this.tempList[i].cardmarket.prices.trendPrice)
+              list.push(this.tempList[i].cardmarket.prices.trendPrice)
+              indexList.push(parseInt(i))
+            }
+          }
+        }
+        this.tempCount++
+      }
+      this.tempLowest =  Math.min(...list)
+      this.tempLowestIndex = list.indexOf(this.tempLowest)
+      this.tempLowestIndex = indexList[this.tempLowestIndex]
+
+      this.tempHighest =  Math.max(...list)
+      this.tempHighestIndex = list.indexOf(this.tempHighest)
+      this.tempHighestIndex = indexList[this.tempHighestIndex]
+      // console.log(indexList)
+      // this.tempLowest = list.indexof(this.tempLowest)
+      // this.tempHighest =  Math.max(...list)
+      
+      
       return
     },
 
@@ -630,6 +705,28 @@ export default {
 
       
       return
+    },
+
+    async test(){
+      const URL = 'https://api.pokemontcg.io/v2/sets?orderBy=releaseDate'
+      const res = await fetch(URL)
+      const json = await res.json()
+      let list = []
+      for(let i in json.data){
+        // console.log(json.data[i].releaseDate)
+        let item = json.data[i]
+        list.push({id:item.id, total:item.printedTotal,series: item.series, name: item.name, releaseDate: item.releaseDate, images: item.image })
+      }
+      console.log(json.data)
+      console.log(list)
+      this.list = list
+
+    },
+
+    displayPic(link){
+      console.log(link)
+      this.BigPicture = true
+      this.picsrc = link 
     },
 
 
@@ -997,6 +1094,16 @@ img{
   color:blue;
 }
 
+.series{
+  float: left;
+  margin-left: 10px;
+}
+
+
+.bigPic {
+  position: absolute;
+  clip: rect(0px,60px,200px,0px);
+}
 /* Responsive columns - one column layout (vertical) on small screens */
 /* @media screen and (max-width: 600px) {
   .column {
