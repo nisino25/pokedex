@@ -25,6 +25,8 @@
               
               <th @click="mode='search'; chosenRegion='All'"  v-bind:class = "modeClass('search')? 'mode':''">検索</th>&nbsp;
 
+              <th @click="mode='link'; chosenRegion='All'; link() "  v-bind:class = "modeClass('link')? 'mode':''">リンク</th>&nbsp;
+
               <th @click="exportData()"  v-bind:class = "modeClass('a')? 'mode':''">アップロード</th>&nbsp;
             </tr>
           </table>
@@ -291,7 +293,7 @@
                   
                   
                   <div class="card" @click="displayPic(tempList[index].images.large)"  >
-                    <img v-bind:src="tempList[index].images.large">
+                    <img v-bind:src="tempList[index].images.small">
                     <small v-bind:class = "index % 18?'':'end'">No.{{index+1 }}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
                     <br>
                     <!-- <span>{{tempList[index].id}}</span> -->
@@ -359,7 +361,110 @@
                   
                   
                     <div class="card" @click="displayPic(tempList[index].images.large)"  v-bind:class="{ BigPicture: 'bigPic' }" >
-                      <img v-bind:src="tempList[index].images.large">
+                      <img v-bind:src="tempList[index].images.small">
+                      <small v-bind:class = "index % 18?'':'end'">No.{{index+1 }}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
+                      <br>
+                      <!-- <span>{{tempList[index].id}}</span> -->
+                      <span v-if="tempList[index].supertype=='Pokémon'" style="margin-bottom: 50px">{{basic[tempList[index].nationalPokedexNumbers[0]].name}}</span>
+                      <!-- <span  style="margin-bottom: 50px">{{tempList[index].name}}</span> -->
+                      <br>
+                      <span v-if="tempList[index].cardmarket">
+                        <span v-if="tempList[index].cardmarket.prices">
+                          {{ Math.floor(tempList[index].cardmarket.prices.trendPrice * 125)}}¥
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                  
+                </template>
+              </div>
+              <div v-else> 
+                <div v-for="(pokemon,index) in dataList" :key="index">
+                  <div @click="getPic(index)" class="column" v-if="(lowIndex <=index && index <= maxIndex && showingCaught ) || (!pokemon.owned && !showingCaught && lowIndex <=index && index <= maxIndex)"  > 
+                    
+                    
+                    <div class="card" >
+                      <img v-bind:src="linkSrc + index +'.png'">
+                      <small v-bind:class = "index % 18?'':'end'">No.{{index}}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
+                      <br>
+                      <span style="margin-bottom: 50px">{{basic[index].name}}</span>
+                      <br>
+                      <span style="margin-bottom: 50px">{{totalPrintedList[index]}} Cards</span><br>
+                     
+                    </div>
+                  </div>
+                
+                </div>
+
+             </div>
+              
+            </div>
+
+            <div style="margin-bottom: 0px">
+              Top&nbsp;<a class="fa fa-arrow-up" @click="topFunction()" style="margin-top:25px"></a>
+            </div>
+
+          </div>
+            
+
+        </div>
+
+        <div v-if="mode=='link'"> <!-- mode -link- -->
+          
+          
+          <hr>
+          
+
+
+
+
+
+          <div v-if="searchMode=='pokemon'"> <!-- pokemon seach --> 
+            <div style="float:right; margin-right:5px; margin-right: 20px">
+              <div @click='showingCaught = true'>
+                <label for="" style="margin-right: 6px">ON</label>
+                <input type="radio" v-model="showingCaught" v-bind:value="true">
+              </div>
+
+              <div @click='showingCaught = false' style="">
+                <label for="">OFF</label>
+                <input type="radio" v-model="showingCaught" v-bind:value="false">
+              </div>
+
+              
+            </div>
+            {{lowIndex}}-{{maxIndex}} 
+            <br>
+            <span @click="showingOnePokemon = false">Go back</span>
+            
+            <br>
+            <div v-if="showingOnePokemon">
+              <span v-if="showingOnePokemon">{{tempCount}} Cards</span><br>
+             <span>
+                Lowest price {{Math.floor(tempLowest* 125)}}¥ from No.{{tempLowestIndex +1}}
+              </span><br>
+              <span>
+                Highesgt price {{Math.floor(tempHighest* 125)}}¥ from No.{{tempHighestIndex +1}}
+              </span><br>
+
+            </div>
+            
+
+            <br><br>
+
+            <div class="row">
+            <!-- card -->
+              <div v-if="showingOnePokemon">
+                hey
+                
+                
+                <template v-for="(pokemon,index) in tempList" :key="index">
+                  <div  class="column"  > 
+                    
+                  
+                  
+                    <div class="card" @click="displayPic(tempList[index].images.large)"  v-bind:class="{ BigPicture: 'bigPic' }" >
+                      <img v-bind:src="tempList[index].images.small">
                       <small v-bind:class = "index % 18?'':'end'">No.{{index+1 }}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
                       <br>
                       <!-- <span>{{tempList[index].id}}</span> -->
@@ -437,6 +542,7 @@ import { basic } from  './const/basic.js'
 import auth from  './components/auth.vue';
 import db from "./firebase.js"
 
+// import { useRoute } from 'vue-router'
 // import firebase from 'firebase'
 // require('firebase/aut
 export default {
@@ -728,6 +834,27 @@ export default {
       this.BigPicture = true
       this.picsrc = link 
     },
+
+    async link(){
+      const URL = 'https://api.pokemontcg.io/v2/cards?q=set.id:' + 'base1'
+      
+      const res = await fetch(URL)
+      const json = await res.json()
+      this.tempList = json.data
+      console.log(this.tempList)
+      this.hasChosenSeries =true
+      this.selectedSeries = 'base1'
+      // this.getMoreData() 
+      this.templist = json.data
+      this.showingOnePokemon = false
+      this.searchMode = 'pokemon'
+      // const route = useRoute()
+      console.log(this.$route.query.page)
+      console.log(new URL(location.href).searchParams.get('p1'))
+      return
+    },
+
+
 
 
 
