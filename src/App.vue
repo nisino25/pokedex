@@ -689,7 +689,7 @@ export default {
 
     getThePics(){
       this.picArray = []
-      this.picLinks ='https://images.pokemontcg.io/base1/2.png,https://images.pokemontcg.io/base1/4.png,https://images.pokemontcg.io/base1/6.png,https://images.pokemontcg.io/base1/8.png,https://images.pokemontcg.io/base1/7.png,https://images.pokemontcg.io/base1/1.png'
+      // this.picLinks ='https://images.pokemontcg.io/base1/2.png,https://images.pokemontcg.io/base1/4.png,https://images.pokemontcg.io/base1/6.png,https://images.pokemontcg.io/base1/8.png,https://images.pokemontcg.io/base1/7.png,https://images.pokemontcg.io/base1/1.png'
       
       let str = this.picLinks
       let i = 0 
