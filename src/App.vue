@@ -27,7 +27,10 @@
 
               <th @click="mode='link'; chosenRegion='All'; link() "  v-bind:class = "modeClass('link')? 'mode':''">リンク</th>&nbsp;
 
-              <th @click="exportData()"  v-bind:class = "modeClass('a')? 'mode':''">アップロード</th>&nbsp;
+              <th @click="exportData()"  v-bind:class = "modeClass('a')? 
+              'mode':''">アップロード</th>&nbsp;
+
+              <th @click="mode='picLink'"  v-bind:class = "modeClass('picLink')? 'mode':' '">＊</th>&nbsp;
             </tr>
           </table>
 
@@ -512,6 +515,37 @@
 
         </div>
 
+        <div v-if="mode=='picLink'"> <!-- mode -pic Link- -->
+          <div>
+            <input type="text" v-model="picLinks">
+            <button @click="getThePics()">Check the pics</button>
+          </div>
+
+        
+          
+
+            <div class="row">
+            <!-- card -->
+              <template v-for="(pokemon,index) in picArray" :key="index">
+                <div class='column'> 
+                  
+                  
+                  <div class="card" >
+                    <img v-bind:src="pokemon">
+                    <small v-bind:class = "index % 18?'':'end'">No.{{index+1}}&nbsp;</small>
+                    <br>
+                    <!-- <span style="margin-bottom: 50px">{{basic[index].name}}</span> -->
+                  </div>
+                </div>
+                
+              </template>
+            </div>
+            <div style="margin-bottom: 0px">
+              Top&nbsp;<a class="fa fa-arrow-up" @click="topFunction()" style="margin-top:25px"></a>
+            </div>
+
+        </div>
+
       </div>
           
     
@@ -587,6 +621,9 @@ export default {
       BigPicture: false,
       picsrc: undefined,
 
+      picLinks: '',
+      picArray: [],
+
 
     }
   },
@@ -649,6 +686,34 @@ export default {
     
   },
   methods:{
+
+    getThePics(){
+      this.picArray = []
+      this.picLinks ='https://images.pokemontcg.io/base1/2.png,https://images.pokemontcg.io/base1/4.png,https://images.pokemontcg.io/base1/6.png,https://images.pokemontcg.io/base1/8.png,https://images.pokemontcg.io/base1/7.png,https://images.pokemontcg.io/base1/1.png'
+      
+      let str = this.picLinks
+      let i = 0 
+      while(i <= 5 ){
+        let result = str.split(',')[i];
+        this.picArray.push(result)
+        i++
+        // str = str.split(',')[i]
+        // str = str.split(',')[1]
+        console.log(str.split(',')[i])
+      }
+      
+
+      // let str = this.picLinks
+      // let delimiter = ','
+      // let start = 1
+      // let tokens = str.split(delimiter).slice(start)
+      // let result = tokens.join(delimiter); // those.that
+      // console.log(result)
+      
+    
+
+
+    },
 
     createData(){
       let count = 0
@@ -888,8 +953,11 @@ export default {
       let count = 1
       if(this.dataList){
         while(count < 152){
-          if(this.dataList[count].owned){
-            num++
+          if(this.dataList[count]){
+            if(this.dataList[count].owned){
+              num++
+            }
+
           }
           count++
         }
@@ -901,8 +969,10 @@ export default {
       let count = 152
       if(this.dataList){
         while(count < 252){
-          if(this.dataList[count].owned){
-            num++
+          if(this.dataList[count]){
+            if(this.dataList[count].owned){
+              num++
+            }
           }
           count++
         }
@@ -914,8 +984,10 @@ export default {
       let count = 252
       if(this.dataList){
         while(count < 387){
-          if(this.dataList[count].owned){
-            num++
+          if(this.dataList[count]){
+            if(this.dataList[count].owned){
+              num++
+            }
           }
           count++
         }
@@ -927,8 +999,10 @@ export default {
       let count = 387
       if(this.dataList){
         while(count < 494){
-          if(this.dataList[count].owned){
-            num++
+          if(this.dataList[count]){
+            if(this.dataList[count].owned){
+              num++
+            }
           }
           count++
         }
@@ -940,8 +1014,10 @@ export default {
       let count = 494
       if(this.dataList){
         while(count < 650){
-          if(this.dataList[count].owned){
-            num++
+          if(this.dataList[count]){
+            if(this.dataList[count].owned){
+              num++
+            }
           }
           count++
         }
@@ -953,8 +1029,10 @@ export default {
       let count = 650
       if(this.dataList){
         while(count < 722){
-          if(this.dataList[count].owned){
-            num++
+          if(this.dataList[count]){
+            if(this.dataList[count].owned){
+              num++
+            }
           }
           count++
         }
@@ -966,8 +1044,11 @@ export default {
       let count = 722
       if(this.dataList){
         while(count < 810){
-          if(this.dataList[count].owned){
-            num++
+          if(this.dataList[count]){
+            if(this.dataList[count].owned){
+              
+              num++
+            }
           }
           count++
         }
@@ -979,8 +1060,10 @@ export default {
       let count = 810
       if(this.dataList){
         while(count < 899){
-          if(this.dataList[count].owned){
-            num++
+          if(this.dataList[count]){
+            if(this.dataList[count].owned){
+              num++
+            }
           }
           count++
         }
@@ -992,8 +1075,10 @@ export default {
       let count = 1
       if(this.dataList){
         while(count < 899){
-          if(this.dataList[count].owned){
-            num++
+          if(this.dataList[count]){
+            if(this.dataList[count].owned){
+              num++
+            }
           }
           count++
         }
