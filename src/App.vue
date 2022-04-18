@@ -518,8 +518,10 @@
 
         <div v-if="mode=='picLink'"> <!-- mode -pic Link- -->
           <div>
-            <input type="text" v-model="picLinks">
-            <button @click="getThePics()">Check the pics</button>
+            <input type="number" v-model="seriesNum"   >
+            <br>
+            <small>0-139</small>
+            <button @click="getTheRandoms()">Check the pics</button>
           </div>
 
         
@@ -535,16 +537,19 @@
                     <img v-bind:src="pokemon">
                     <small v-bind:class = "index % 18?'':'end'">No.{{index+1}}&nbsp;</small>
                     <br>
+                    
+                    
+                     <span>
+                      {{ Math.floor(priceArray[index] * 125)}}¥
+
+                    </span>
+                    
                     <!-- <span style="margin-bottom: 50px">{{basic[index].name}}</span> -->
                   </div>
                 </div>
                 
               </template>
             </div>
-            <div style="margin-bottom: 0px">
-              Top&nbsp;<a class="fa fa-arrow-up" @click="topFunction()" style="margin-top:25px"></a>
-            </div>
-
         </div>
 
       </div>
@@ -556,7 +561,7 @@
       
     </div>
 
-    <div v-else @click="BigPicture= false"> <!-- pivs  -->
+    <div v-else @click="BigPicture= false"> <!-- pics  -->
       <img style="margin-top:50px" :src="picsrc" alt="">
       <br>
       <button >Go back</button>
@@ -624,6 +629,8 @@ export default {
 
       picLinks: '',
       picArray: [],
+      priceArray: [],
+      seriesNum: 0,
 
 
     }
@@ -687,6 +694,59 @@ export default {
     
   },
   methods:{
+
+    async getTheRandoms(){
+      this.picArray = []
+      this.priceArray = []
+
+      if(this.seriesNum < 0 || this.seriesNum >139) return
+      console.log(this.seriesNum)
+      // console.log(this.seriesList)
+      const URL = 'https://api.pokemontcg.io/v2/cards?q=set.id:' + this.seriesList[this.seriesNum].id
+      
+      const res = await fetch(URL)
+      const json = await res.json()
+      console.log(json.data)
+      
+
+      
+
+      // ---------------
+      let count = 0
+      while(count <= 8){
+        let num= Math.floor(Math.random() * this.seriesList[this.seriesNum].total) +1
+        let result = json.data[num].images.small
+        this.picArray.push(result)
+
+        if(json.data[num].cardmarket){
+          if(json.data[num].cardmarket.prices){
+            if(json.data[num].cardmarket.prices.trendPrice){
+              this.priceArray.push(json.data[num].cardmarket.prices.trendPrice)
+            }else{ 
+              this.priceArray.push(0)
+            }
+          }else{
+            this.priceArray.push(0)
+          }
+        }else{
+          this.priceArray.push(0)
+        }
+        // const URL = 'https://api.pokemontcg.io/v2/cards?q=nationalPokedexNumbers:6'
+        // const res = await fetch(URL)
+        // const json = await res.json()
+        // console.log(json)
+
+        // console.log(num)
+        count++
+    
+      }
+
+      console.log(this.priceArray)
+
+      
+
+
+    },
 
     getThePics(){
       this.picArray = []
