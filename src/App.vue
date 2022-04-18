@@ -261,7 +261,7 @@
                 <!-- <span @click="test()">test</span> -->
                 <!-- {{list}} -->
                 <div v-for="(series,index) in seriesList" :key="index">
-                  <span @click="searchSeries(series.id)" class="series"><small style="color:red">{{series.series}}</small>:{{series.name}}({{series.releaseDate.substring(0, series.releaseDate.indexOf('/'))}})</span>
+                  <span @click="searchSeries(series.id)" class="series">{{index}}.<small style="color:red">{{series.series}}</small>:{{series.name}}({{series.releaseDate.substring(0, series.releaseDate.indexOf('/'))}})</span>
                   <br>
                 </div>
               </template>
@@ -525,15 +525,13 @@
           </div>
 
         
-          
-
             <div class="row">
             <!-- card -->
               <template v-for="(pokemon,index) in picArray" :key="index">
                 <div class='column'> 
                   
                   
-                  <div class="card" >
+                  <div class="card" @click="displayPic(largePicArray[index])" >
                     <img v-bind:src="pokemon">
                     <small v-bind:class = "index % 18?'':'end'">No.{{index+1}}&nbsp;</small>
                     <br>
@@ -606,7 +604,7 @@ export default {
       showingCaught: true,
       list: undefined,
 
-      mode: 'search',
+      mode: 'picLink',
       searchMode: 'series',
       // currentUser: 'nisino25',
       is_logined: false,
@@ -629,7 +627,9 @@ export default {
 
       picLinks: '',
       picArray: [],
+      largePicArray: [],
       priceArray: [],
+
       seriesNum: 0,
 
 
@@ -698,6 +698,7 @@ export default {
     async getTheRandoms(){
       this.picArray = []
       this.priceArray = []
+      this.largePicArray= []
 
       if(this.seriesNum < 0 || this.seriesNum >139) return
       console.log(this.seriesNum)
@@ -717,6 +718,7 @@ export default {
         let num= Math.floor(Math.random() * this.seriesList[this.seriesNum].total) +1
         let result = json.data[num].images.small
         this.picArray.push(result)
+        this.largePicArray.push(json.data[num].images.large)
 
         if(json.data[num].cardmarket){
           if(json.data[num].cardmarket.prices){
