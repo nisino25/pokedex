@@ -518,9 +518,9 @@
 
         <div v-if="mode=='picLink'"> <!-- mode -pic Link- -->
           <div>
-            <input type="number" v-model="seriesNum"   >
+            <input type="number" v-model="seriesNum" placeholder="0-139"   >
             <br>
-            <small>0-139</small>
+            <br>
             <button @click="getTheRandoms()">Check the pics</button>
           </div>
 
@@ -630,7 +630,7 @@ export default {
       largePicArray: [],
       priceArray: [],
 
-      seriesNum: 0,
+      seriesNum: undefined,
 
 
     }
@@ -716,8 +716,14 @@ export default {
       let count = 0
       while(count <= 8){
         let num= Math.floor(Math.random() * this.seriesList[this.seriesNum].total) +1
-        let result = json.data[num].images.small
-        this.picArray.push(result)
+        if(json.data[num].images){
+          let result = json.data[num].images.small
+          this.picArray.push(result)
+
+        }else{
+          this.picArray.push('https://images.pokemontcg.io/pl3/301_hires.png')
+        }
+        
         this.largePicArray.push(json.data[num].images.large)
 
         if(json.data[num].cardmarket){
