@@ -281,7 +281,7 @@
               {{this.seriesDetail.printedTotal}}
               <br>
 
-              <span @click="hasChosenSeries=false">Go back</span>
+              <span class="button" @click="hasChosenSeries=false">Go back</span>
 
             <br><br><br>
 
@@ -291,7 +291,7 @@
 
     
 
-            <div class="row"> <!-- card -->
+            <div class="row" v-if="hasChosenSeries"> <!-- card -->
               <template v-for="(pokemon,index) in tempList" :key="index">
                 <div class="column"  > 
                   
@@ -521,8 +521,31 @@
             <input type="number" v-model="seriesNum" placeholder="0-139"   >
             <br>
             <br>
-            <button @click="getTheRandoms()">Check the pics</button>
+            <div style="width: 70%; margin: 0 auto; overflow: hidden; " >
+                <button style=" float: left;" @click="getTheRandoms()" class="button"> Check </button>
+                <button style="" class="button" @click="feelingLucky()"> Feeling Lucky </button>
+            </div>
+            <!-- <button class="button" @click="getTheRandoms()"></button> -->
           </div>
+          <hr>
+
+          <div v-if="seriesNum">  <!-- pack detail- -->
+            <span>
+              Total Price <span style="color:goldenrod">{{Math.floor(totalPrice * 125)}}¥</span> 
+            </span>
+            <br>
+            <span>
+              {{seriesList[seriesNum].total}} cards in total
+            </span>
+            <br>
+            <span style="color:red">
+              {{seriesList[seriesNum].name}}: {{seriesList[seriesNum].releaseDate}}
+            </span>
+            <br>
+            <hr>
+          </div>
+
+            
 
         
             <div class="row">
@@ -631,6 +654,7 @@ export default {
       priceArray: [],
 
       seriesNum: undefined,
+      totalPrice: 0,
 
 
     }
@@ -695,7 +719,16 @@ export default {
   },
   methods:{
 
+    async feelingLucky(){
+      console.log(this.seriesNum)
+      this.seriesNum = Math.floor(Math.random() * 140) 
+      console.log(this.seriesNum)
+      this.getTheRandoms()
+      
+    },
+
     async getTheRandoms(){
+      this.totalPrice = 0
       this.picArray = []
       this.priceArray = []
       this.largePicArray= []
@@ -715,7 +748,8 @@ export default {
       // ---------------
       let count = 0
       while(count <= 8){
-        let num= Math.floor(Math.random() * this.seriesList[this.seriesNum].total) +1
+        let num= Math.floor(Math.random() * this.seriesList[this.seriesNum].total) 
+        console.log(num)
         if(json.data[num].images){
           let result = json.data[num].images.small
           this.picArray.push(result)
@@ -730,6 +764,7 @@ export default {
           if(json.data[num].cardmarket.prices){
             if(json.data[num].cardmarket.prices.trendPrice){
               this.priceArray.push(json.data[num].cardmarket.prices.trendPrice)
+              this.totalPrice = this.totalPrice + json.data[num].cardmarket.prices.trendPrice
             }else{ 
               this.priceArray.push(0)
             }
@@ -925,12 +960,12 @@ export default {
     },
 
     async searchSeries(title){
+      this.hasChosenSeries =true
       const URL = this.setUrl +title
       const res = await fetch(URL)
       const json = await res.json()
       this.tempList = json.data
       console.log(this.tempList)
-      this.hasChosenSeries =true
       this.selectedSeries = title
       this.getMoreData() 
       return
@@ -1384,6 +1419,20 @@ img{
 .bigPic {
   position: absolute;
   clip: rect(0px,60px,200px,0px);
+}
+
+
+.button {
+  background-color: lightblue;
+  border: none;
+  color: black;
+  padding: 10px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
 }
 /* Responsive columns - one column layout (vertical) on small screens */
 /* @media screen and (max-width: 600px) {

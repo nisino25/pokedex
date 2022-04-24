@@ -24,7 +24,6 @@
       <div class="clearfix">
         <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
         <button class="signupbtn" @click="signup()">Sign Up</button>
-        <button class="signupbtn" @click="signup()">サインアップ</button>
       </div>
     </div>
   </form>
@@ -69,8 +68,6 @@ export default {
           await docRef.set(favoriteData)
           console.log('done')
           this.currentUser = this.email
-        }else{
-          alert('alredy exists')
         }
 
         // favoriteData[this.currentUser] = JSON.stringify(this.dataList)
@@ -87,7 +84,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 body {font-family: Arial, Helvetica, sans-serif;}
 * {box-sizing: border-box;}
 
