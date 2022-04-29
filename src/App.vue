@@ -12,10 +12,10 @@
   </head>
 
   <body>
-    <auth v-if="is_loggedin"></auth>
+    <!-- <auth v-if="is_loggedin"></auth> -->
     
 
-    <div class="wrapper" v-if="!BigPicture"> <!-- wrapper  -->
+    <div class="wrapper" v-show="!BigPicture"> <!-- wrapper  -->
 
       <div><!-- menu section  -->
         <div> <!-- menu button  -->
@@ -25,13 +25,15 @@
               <th @click="mode='rare'; chosenRegion='All'"  v-bind:class = "modeClass('rare')? 'mode':''">レアカ</th>&nbsp;
               
               <th @click="mode='search'; chosenRegion='All'"  v-bind:class = "modeClass('search')? 'mode':''">検索</th>&nbsp;
-
-              <th @click="mode='link'; chosenRegion='All'; link() "  v-bind:class = "modeClass('link')? 'mode':''">リンク</th>&nbsp;
+<!-- 
+              <th @click="mode='link'; chosenRegion='All'; link() "  v-bind:class = "modeClass('link')? 'mode':''">リンク</th>&nbsp; -->
 
               <th @click="exportData()"  v-bind:class = "modeClass('a')? 
               'mode':''">アップロード</th>&nbsp;
 
-              <th @click="mode='picLink'"  v-bind:class = "modeClass('picLink')? 'mode':' '">＊</th>&nbsp;
+              <th @click="mode='picLink'"  v-bind:class = "modeClass('picLink')? 'mode':' '">開封</th>&nbsp;
+
+              <th @click="mode='game'"  v-bind:class = "modeClass('game')? 'mode':' '">Game</th>&nbsp;
             </tr>
           </table>
 
@@ -202,7 +204,7 @@
           
           <table style="margin-left:auto; margin-right:auto; margin-top:30px">
             <tr>
-              <th @click="searchMode='pokemon'" v-bind:class = "searchClass('pokemon')? 'searchTab':''">ポケモン</th>&nbsp;
+              <th @click="searchMode='pokemon'; chosenRegion='Kanto'" v-bind:class = "searchClass('pokemon')? 'searchTab':''">ポケモン</th>&nbsp;
               <th @click="searchMode='series'; chosenRegion='all'"  v-bind:class = "searchClass('series')? 'searchTab':''">シリーズ</th>&nbsp;
               
               </tr>
@@ -296,7 +298,7 @@
                 <div class="column"  > 
                   
                   
-                  <div class="card" @click="displayPic(tempList[index].images.large)"  >
+                  <div class="card" @click="displayPic(tempList[index].images.large,index)"  >
                     <img v-bind:src="tempList[index].images.small">
                     <small v-bind:class = "index % 18?'':'end'">No.{{index+1 }}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
                     <br>
@@ -305,7 +307,9 @@
                     <span v-else style="margin-bottom: 50px">{{tempList[index].name}}</span>
                     <br>
                     <span v-if="tempList[index].cardmarket">
+                      <span v-if="tempList[index].cardmarket.prices">
                       {{ Math.floor(tempList[index].cardmarket.prices.averageSellPrice * 125)}}¥
+                      </span>
 
                     </span>
                   </div>
@@ -360,114 +364,11 @@
                 
                 
                 <template v-for="(pokemon,index) in tempList" :key="index">
-                  <div  class="column"  > 
+                  <div  class="column"> 
                     
                   
                   
-                    <div class="card" @click="displayPic(tempList[index].images.large)"  v-bind:class="{ BigPicture: 'bigPic' }" >
-                      <img v-bind:src="tempList[index].images.small">
-                      <small v-bind:class = "index % 18?'':'end'">No.{{index+1 }}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
-                      <br>
-                      <!-- <span>{{tempList[index].id}}</span> -->
-                      <span v-if="tempList[index].supertype=='Pokémon'" style="margin-bottom: 50px">{{basic[tempList[index].nationalPokedexNumbers[0]].name}}</span>
-                      <!-- <span  style="margin-bottom: 50px">{{tempList[index].name}}</span> -->
-                      <br>
-                      <span v-if="tempList[index].cardmarket">
-                        <span v-if="tempList[index].cardmarket.prices">
-                          {{ Math.floor(tempList[index].cardmarket.prices.trendPrice * 125)}}¥
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                  
-                </template>
-              </div>
-              <div v-else> 
-                <div v-for="(pokemon,index) in dataList" :key="index">
-                  <div @click="getPic(index)" class="column" v-if="(lowIndex <=index && index <= maxIndex && showingCaught ) || (!pokemon.owned && !showingCaught && lowIndex <=index && index <= maxIndex)"  > 
-                    
-                    
-                    <div class="card" >
-                      <img v-bind:src="linkSrc + index +'.png'">
-                      <small v-bind:class = "index % 18?'':'end'">No.{{index}}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
-                      <br>
-                      <span style="margin-bottom: 50px">{{basic[index].name}}</span>
-                      <br>
-                      <span style="margin-bottom: 50px">{{totalPrintedList[index]}} Cards</span><br>
-                     
-                    </div>
-                  </div>
-                
-                </div>
-
-             </div>
-              
-            </div>
-
-            <div style="margin-bottom: 0px">
-              Top&nbsp;<a class="fa fa-arrow-up" @click="topFunction()" style="margin-top:25px"></a>
-            </div>
-
-          </div>
-            
-
-        </div>
-
-        <div v-if="mode=='link'"> <!-- mode -link- -->
-          
-          
-          <hr>
-          
-
-
-
-
-
-          <div v-if="searchMode=='pokemon'"> <!-- pokemon seach --> 
-            <div style="float:right; margin-right:5px; margin-right: 20px">
-              <div @click='showingCaught = true'>
-                <label for="" style="margin-right: 6px">ON</label>
-                <input type="radio" v-model="showingCaught" v-bind:value="true">
-              </div>
-
-              <div @click='showingCaught = false' style="">
-                <label for="">OFF</label>
-                <input type="radio" v-model="showingCaught" v-bind:value="false">
-              </div>
-
-              
-            </div>
-            {{lowIndex}}-{{maxIndex}} 
-            <br>
-            <span @click="showingOnePokemon = false">Go back</span>
-            
-            <br>
-            <div v-if="showingOnePokemon">
-              <span v-if="showingOnePokemon">{{tempCount}} Cards</span><br>
-             <span>
-                Lowest price {{Math.floor(tempLowest* 125)}}¥ from No.{{tempLowestIndex +1}}
-              </span><br>
-              <span>
-                Highesgt price {{Math.floor(tempHighest* 125)}}¥ from No.{{tempHighestIndex +1}}
-              </span><br>
-
-            </div>
-            
-
-            <br><br>
-
-            <div class="row">
-            <!-- card -->
-              <div v-if="showingOnePokemon">
-                hey
-                
-                
-                <template v-for="(pokemon,index) in tempList" :key="index">
-                  <div  class="column"  > 
-                    
-                  
-                  
-                    <div class="card" @click="displayPic(tempList[index].images.large)"  v-bind:class="{ BigPicture: 'bigPic' }" >
+                    <div class="card" @click="displayPic(tempList[index].images.large,index); "  v-bind:class="{ BigPicture: 'bigPic' }" >
                       <img v-bind:src="tempList[index].images.small">
                       <small v-bind:class = "index % 18?'':'end'">No.{{index+1 }}&nbsp;<i class='fa fa-star' style="font-size:100%;" v-if="pokemon.shiny"></i></small>
                       <br>
@@ -573,6 +474,11 @@
             </div>
         </div>
 
+        <div v-if="mode=='game'">  <!-- game mode- -->
+          <span>hey</span>
+
+        </div>
+
       </div>
           
     
@@ -582,8 +488,10 @@
       
     </div>
 
-    <div v-else @click="BigPicture= false"> <!-- pics  -->
-      <img style="margin-top:50px" :src="picsrc" alt="">
+    <div v-if="BigPicture" @click="BigPicture= false"> <!-- pics  -->
+      <img style="margin-top:50px; height:80%; width: auto" :src="picsrc" alt="">
+      <br>
+      <span v-if="specificDetail">{{specificDetail}}</span>
       <br>
       <button >Go back</button>
     </div>
@@ -600,7 +508,7 @@ import { nameList } from  './const/nameList'
 import { seriesList } from  './const/seriesList'
 import { totalPrintedList } from  './const/totalPrintedList'
 import { basic } from  './const/basic.js'
-import auth from  './components/auth.vue';
+// import auth from  './components/auth.vue';
 import db from "./firebase.js"
 
 // import { useRoute } from 'vue-router'
@@ -609,7 +517,7 @@ import db from "./firebase.js"
 export default {
   name: 'App',
   components: {
-    auth 
+    // auth 
   },
   data(){
     return{
@@ -621,7 +529,7 @@ export default {
       totalPrintedList,
       basic,
       dataList: undefined,
-      chosenRegion: 'All',
+      chosenRegion: 'Kanto',
       lowIndex: 1,
       maxIndex: 151,
       showingCaught: true,
@@ -655,6 +563,9 @@ export default {
 
       seriesNum: undefined,
       totalPrice: 0,
+
+      specificDetail: undefined,
+
 
 
     }
@@ -998,7 +909,10 @@ export default {
 
     },
 
-    displayPic(link){
+    displayPic(link,index){
+      console.log(this.tempList[index].id)
+      console.log(this.tempList[index])
+      this.specificDetail = this.tempList[index]
       console.log(link)
       this.BigPicture = true
       this.picsrc = link 
@@ -1331,31 +1245,51 @@ export default {
 </script>
 
 <style>
+@media screen and (max-width: 3000px) {
+  html{
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    /* background-color: blue; */
+  }
+}
+
+@media screen and (max-width: 400px) {
+  html{
+    width: 375px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    /* background-color: red; */
+  }
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  margin-right: auto;
-  margin-left: auto;
+  /* margin-right: auto;
+  margin-left: auto; */
   color: #2c3e50;
   margin-top: 60px;
-  width: 375px;
-  margin:0;
-  padding:0;
-  overflow-x:hidden;
-  vertical-align: middle;
+  
+  margin: auto;
+  /* width: 60%; */
+  /* border: 5px solid #FFFF00; */
+  padding: 5px;
 }
 
 * {
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
 }
 
 body {
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
-  margin-right: auto;
-  margin-left: auto;
+  /* margin-right: auto;
+  margin-left: auto; */
 }
 
 /* Float four columns side by side */
